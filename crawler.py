@@ -58,13 +58,21 @@ class Crawler:
     @staticmethod
     def youtuberVideos(user, verbose=True):    
         dates = '<div class="TableMonthlyStats" style="width: 80px; padding: 5px 2px; background: #fafafa; font-size: 9pt; border-bottom: 1px solid #eee;">(.*?)</div>'                 
-        
+        titles = '<a href=".*?" target="_BLANK" rel="nofollow" style="text-decoration: none;">(.*?)</a>'
+        links = '<div class="TableMonthlyStats" style="width: 370px; padding: 5px 0px;  background: #fafafa; border-bottom: 1px solid #eee; font-size: 9pt;"><a href="(.*?)".*?</a>'
+        views = 'rel="nofollow" style="text-decoration: none;">.*?<div class="TableMonthlyStats" style="width: 65px; padding: 5px 0px;  background: #fafafa; font-size: 9pt; border-bottom: 1px solid #eee;">(.*?)</div>'
+        ratings = 'fazer'
+        percentages = '<span style="font-weight: bold; color:#00bee7;">(.*?)%</span>'
+        comments = '<a href=".*?" target="_BLANK">(.*?)</a>'
         try:            
             html = socialBladeFile(user+'.html')
-            r_dates = re.findall(dates, html)
-            print(r_dates)
+            results = re.findall(ratings, html)
+            print('\n'.join(results))
         except RequestException:            
             print('Erro ao buscar %s\n') % (user)
 
 #Crawler.youtuber('whinderssonnunes')
 Crawler.youtuberVideos('pewdiepie')
+
+#youtubers para ver
+#resendevil , emergencyawesome, newrockstars , lubatv , felipeneto
