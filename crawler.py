@@ -73,35 +73,37 @@ class Crawler:
  
    
 def createDatabase():
-
     conn = sqlite3.connect('socialblade.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS youtubers
         (id real, user text)''')
 
     c.execute('''CREATE TABLE IF NOT EXISTS videos
-                (userId real, videoId real, title text, created_at date, comments real, duration text, views real, ratings real, rating real, isSexual boolean)''')
+                (userId text, videoId text, title text, created_at date, comments real, duration text, views real, ratings integer, rating real,thumbnail blob, isSexual boolean, isQuestion boolean, isArrowCircle boolean, isHyperbole boolean, containsBaitWords boolean)''')
 
     conn.commit()
     conn.close()
     
-def populateDatabase(data):
+def populateDatabase(user,data):
     conn = sqlite3.connect('socialblade.db')
     c = conn.cursor()
-    c.executemany('INSERT INTO videos VALUES (1, ?,?,?,?,?,?,?,?, 0)', eval(data))
+    c.executemany("INSERT INTO videos VALUES ('{}',?,?,?,?,?,?,?,?, null, 0, 0 , 0 , 0 , 0 )".format(user),eval(data))
     conn.commit()
     conn.close()   
+def converter(data):
+    data = str(userData).replace("{", "(")
+    data = data.replace("}", ")")
+    data = data.replace("'comments':", "").replace("'views':","").replace("'title':","").replace("'rating':","").replace("'ratings':","").replace("'videoId':","").replace("'duration':","").replace("'created_at':","")
+    return data
+
 #Crawler.youtuber('whinderssonnunes')
 
 createDatabase()
 #user = input("Digite o youtuber:")
-userData = json.loads(Crawler.getAllData('flair751'))
-userData = str(userData).replace("{", "(")
-userData = userData.replace("}", ")")
-userData = userData.replace("'comments':", "").replace("'views':","").replace("'title':","").replace("'rating':","").replace("'ratings':","").replace("'videoId':","").replace("'duration':","").replace("'created_at':","")
-
-print(userData)
-populateDatabase(userData)
+user = 'pewdiepie'
+userData = json.loads(Crawler.getAllData(user))
+userData = converter(userData)
+populateDatabase(user, userData)
 
 #youtubers para ver
 #resendevil , emergencyawesome, newrockstars , lubatv , felipeneto
