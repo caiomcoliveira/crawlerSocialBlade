@@ -8,6 +8,7 @@ import sys
 import requests
 import re
 import codecs
+import sqlite3
  
 # Renomeando funções/classes para maior clareza de código.
 
@@ -28,13 +29,12 @@ class Crawler:
         html = socialBlade(user,'videos').decode()
         token = '<div id="YouTube-Video-Wrap" class="(.*?)"></div>'
         try:
-            r_token = re.findall(token,html)
-            print(r_token[0])
+            r_token = re.findall(token,html)            
             payload = {
             	'channelid' : r_token[0]
             }
-            result = requests.post('https://socialblade.com/js/class/youtube-video-recent', data=payload)
-            print(json.loads(result.content))
+            result = requests.post('https://socialblade.com/js/class/youtube-video-recent', data=payload)            
+            return result.content
         except RequestException:
             print('falhou')
 
@@ -64,18 +64,45 @@ class Crawler:
                 temp['subs'] = subs
                 temp['viewsGrowth'] = viewsGrowth
                 temp['views'] = views
-                userData.append(temp)
-            print(user)
-            for data in userData:
-            	print(data)
+                userData.append(temp)            
+            
+            return userData
             
         except RequestException:            
             print('Erro ao buscar %s\n') % (user)
  
    
+def createDatabase():
 
+    conn = sqlite3.connect('socialblade.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS youtubers
+        (id real, user text)''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS videos
+                (userId real, videoId real, title text, created_at date, comments real, duration text, views real, ratings real, rating real, isSexual boolean)''')
+
+    conn.commit()
+    conn.close()
+    
+def populateDatabase(data):
+    conn = sqlite3.connect('socialblade.db')
+    c = conn.cursor()
+    c.executemany('INSERT INTO videos VALUES (1, ?,?,?,?,?,?,?,?, 0)', eval(data))
+    conn.commit()
+    conn.close()   
 #Crawler.youtuber('whinderssonnunes')
-Crawler.getAllData('pewdiepie')
+
+createDatabase()
+#user = input("Digite o youtuber:")
+userData = json.loads(Crawler.getAllData('flair751'))
+userData = str(userData).replace("{", "(")
+userData = userData.replace("}", ")")
+userData = userData.replace("'comments':", "").replace("'views':","").replace("'title':","").replace("'rating':","").replace("'ratings':","").replace("'videoId':","").replace("'duration':","").replace("'created_at':","")
+
+print(userData)
+populateDatabase(userData)
 
 #youtubers para ver
 #resendevil , emergencyawesome, newrockstars , lubatv , felipeneto
+
