@@ -100,7 +100,7 @@ def converter(data):
 
 createDatabase()
 #user = input("Digite o youtuber:")
-user = 'pewdiepie'
+user = 'lubatv'
 userData = json.loads(Crawler.getAllData(user))
 userData = converter(userData)
 populateDatabase(user, userData)

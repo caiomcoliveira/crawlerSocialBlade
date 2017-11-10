@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
+    <title>Starter Template - Materialize</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</head>
+
+<body>
+    <nav class="light-blue lighten-1" role="navigation">
+        <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
+            <ul class="right hide-on-med-and-down">
+                <li><a href="#">Navbar Link</a></li>
+            </ul>
+
+            <ul id="nav-mobile" class="side-nav">
+                <li><a href="#">Navbar Link</a></li>
+            </ul>
+            <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="section">
+
+            <form method="POST">
+                <div class="row">
+                    {% for video in videos %}
+
+                    <div style="height: 600px; overflow-y: auto" class="card col m4 g4">
+                        <span>{{video.title}}</span>
+                        <div class="card-image">
+                            <img height="300px" src="https://i.ytimg.com/vi/{{video.id}}/hqdefault.jpg">
+
+                        </div>
+                        <div class="card-content">
+
+                            <input name="videoId[]" type="hidden" value="{{video.id}}" />
+                            <div class="input-field">
+                                <input type="text" name="isSexual[]" id="sexual_{{video.id}}" value="{{video.isSexual}}" />
+                                <label class="active" for="sexual_{{video.id}}">Conatação Sexual</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" name="isQuestion[]" id="question_{{video.id}}" value="{{video.isQuestion}}" />
+                                <label class="active" for="question_{{video.id}}">Pergunta(titulo ou thumb)</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" name="isHyperbole[]" id="hyperbole_{{video.id}}" value="{{video.isHyperbole}}" />
+                                <label class="active" for="hyperbole_{{video.id}}">Hiperbole</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" name="isArrowCircle[]" id="arrowCircle_{{video.id}}" value="{{video.isArrowCircle}}" />
+                                <label class="active" for="arrowCircle_{{video.id}}">Circulo ou Seta</label>
+                            </div>
+                            <div class="input-field">
+                                <input type="text" name="containsBaitWords[]" id="containsBaitWords_{{video.id}}" value="{{video.containsBaitWords}}" />
+                                <label class="active" for="containsBaitWords_{{video.id}}">Bait Words</label>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    {% endfor%}
+                    <button style="position:fixed" class="btn red right" type="submit">Enviar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+
+    <!--  Scripts-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/init.js"></script>
+
+</body>
+
+</html>
