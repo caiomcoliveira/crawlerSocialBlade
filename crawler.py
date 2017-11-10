@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##    @package crawler.py
+# @package crawler.py
 #      @author Caio Oliveira (caiomcoliveira@gmail.com)
 
 import json
@@ -9,47 +9,51 @@ import requests
 import re
 import codecs
 import sqlite3
- 
+
 # Renomeando funções/classes para maior clareza de código.
 
 RequestException = requests.exceptions.RequestException
- 
-def socialBlade(user, page=''):    
-    escopo = 'socialblade.com/youtube/user/%s' % user    
-    html = requests.get('https://%s/%s' % (escopo, page))    
+
+
+def socialBlade(user, page=''):
+    escopo = 'socialblade.com/youtube/user/%s' % user
+    html = requests.get('https://%s/%s' % (escopo, page))
     return html.content
+
+
 def socialBladeFile(path):
-    html = codecs.open(path, 'r')    
+    html = codecs.open(path, 'r')
     return html.read()
- 
-class Crawler:   
+
+
+class Crawler:
 
     @staticmethod
     def getAllData(user):
-        html = socialBlade(user,'videos').decode()
+        html = socialBlade(user, 'videos').decode()
         token = '<div id="YouTube-Video-Wrap" class="(.*?)"></div>'
         try:
-            r_token = re.findall(token,html)            
+            r_token = re.findall(token, html)
             payload = {
-            	'channelid' : r_token[0]
+                'channelid': r_token[0]
             }
-            result = requests.post('https://socialblade.com/js/class/youtube-video-recent', data=payload)            
+            result = requests.post(
+                'https://socialblade.com/js/class/youtube-video-recent', data=payload)
             return result.content
         except RequestException:
             print('falhou')
 
     @staticmethod
-    def youtuber(user, verbose=True):            
-        dates = '<div style="float: left; width: 95px;">\s(.*?)</div>'                 
+    def youtuber(user, verbose=True):
+        dates = '<div style="float: left; width: 95px;">\s(.*?)</div>'
         subsGrowth = '<div style="width: 65px; float: left;"><span style="color:#.*?;">(.*?)</span></div>'
-        subs = '<div style="width: 140px; float: left;">(.*?)</div>' 
-        viewsGrowth = '<div style="width: 85px; float: left;"><span style="color:#.*?;">(.*?)</span></div>' #arrumar cor
+        subs = '<div style="width: 140px; float: left;">(.*?)</div>'
+        # arrumar cor
+        viewsGrowth = '<div style="width: 85px; float: left;"><span style="color:#.*?;">(.*?)</span></div>'
         views = '<div style="width: 140px; float: left;">(.*?)</div>'
-        
-        
-        
-        try:            
-            html = socialBlade(user,'monthly').decode()
+
+        try:
+            html = socialBlade(user, 'monthly').decode()
             r_dates = re.findall(dates, html)
             r_subsGrowth = re.findall(subsGrowth, html)
             r_subs = re.findall(subs, html)
@@ -64,14 +68,14 @@ class Crawler:
                 temp['subs'] = subs
                 temp['viewsGrowth'] = viewsGrowth
                 temp['views'] = views
-                userData.append(temp)            
-            
+                userData.append(temp)
+
             return userData
-            
-        except RequestException:            
+
+        except RequestException:
             print('Erro ao buscar %s\n') % (user)
- 
-   
+
+
 def createDatabase():
     conn = sqlite3.connect('socialblade.db')
     c = conn.cursor()
@@ -83,28 +87,33 @@ def createDatabase():
 
     conn.commit()
     conn.close()
-    
-def populateDatabase(user,data):
+
+
+def populateDatabase(user, data):
     conn = sqlite3.connect('socialblade.db')
     c = conn.cursor()
-    c.executemany("INSERT INTO videos VALUES ('{}',?,?,?,?,?,?,?,?, null, 0, 0 , 0 , 0 , 0 )".format(user),eval(data))
+    c.executemany("INSERT INTO videos VALUES ('{}',?,?,?,?,?,?,?,?, null, 0, 0 , 0 , 0 , 0 )".format(
+        user), eval(data))
     conn.commit()
-    conn.close()   
+    conn.close()
+
+
 def converter(data):
     data = str(userData).replace("{", "(")
     data = data.replace("}", ")")
-    data = data.replace("'comments':", "").replace("'views':","").replace("'title':","").replace("'rating':","").replace("'ratings':","").replace("'videoId':","").replace("'duration':","").replace("'created_at':","")
+    data = data.replace("'comments':", "").replace("'views':", "").replace("'title':", "").replace("'rating':", "").replace(
+        "'ratings':", "").replace("'videoId':", "").replace("'duration':", "").replace("'created_at':", "")
     return data
 
-#Crawler.youtuber('whinderssonnunes')
+# Crawler.youtuber('whinderssonnunes')
+
 
 createDatabase()
-#user = input("Digite o youtuber:")
-user = 'lubatv'
+user = input("Digite o youtuber:")
+#user = 'lubatv'
 userData = json.loads(Crawler.getAllData(user))
 userData = converter(userData)
 populateDatabase(user, userData)
 
-#youtubers para ver
+# youtubers para ver
 #resendevil , emergencyawesome, newrockstars , lubatv , felipeneto
-
