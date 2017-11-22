@@ -63,27 +63,41 @@ def getDataByUser(user):
     conn.close()
     return data
 
+def printWithColor(data):
+    if(data != data):
+        return bcolors.FAIL + repr(data) + bcolors.ENDC
+    if(data>=0.3 or data <= -0.3):
+        return bcolors.OKGREEN + repr(data) + bcolors.ENDC
+    return repr(data)
+    
 
 users = ['jakepaulproductions', 'pewdiepie',
-         'rezendeevil', 'jacksepticeye', 'felipeneto']
+         'rezendeevil', 'jacksepticeye', 'felipeneto',  'brotheragi', 
+            'gamermatheus01', 'yesfunnyyes', 
+            'thevoicer1313',
+            'redvacktor',
+            'harujiggly',
+            'beauty4taty' ]
 
 for user in users:
     data = getDataByUser(user)
-    print(bcolors.OKGREEN + "##############" +
+    print(bcolors.OKBLUE + "##############" +
           user + "#############" + bcolors.ENDC)
     print("Correlation Question = " +
-          repr(stats.pointbiserialr(data.views, data.isQuestion)))
+          printWithColor(stats.pointbiserialr(data.views, data.isQuestion).correlation))
     print("Correlation ArrowCircle = " +
-          repr(stats.pointbiserialr(data.views, data.isArrowCircle)))
+          printWithColor(stats.pointbiserialr(data.views, data.isArrowCircle).correlation))
     print("Correlation Sexual = " +
-          repr(stats.pointbiserialr(data.views, data.isSexual)))
+          printWithColor(stats.pointbiserialr(data.views, data.isSexual).correlation))
     print("Correlation Hyperbole = " +
-          repr(stats.pointbiserialr(data.views, data.isHyperbole)))
+          printWithColor(stats.pointbiserialr(data.views, data.isHyperbole).correlation))
     print("Correlation containsBaitWords = " +
-          repr(stats.pointbiserialr(data.views, data.containsBaitWords)))
+          printWithColor(stats.pointbiserialr(data.views, data.containsBaitWords).correlation))
     print("Correlation bait = " +
-          repr(stats.pointbiserialr(data.views, data.isClickBait)))
+          printWithColor(stats.pointbiserialr(data.views, data.isClickBait).correlation))
     print("Coef Peason with ratings" +
-          repr(stats.pearsonr(data.views, data.ratings)))
+          printWithColor(stats.pearsonr(data.views, data.ratings)))
     print("Coef Peason with rating (%)" +
-          repr(stats.pearsonr(data.views, data.rating)))
+          printWithColor(stats.pearsonr(data.views, data.rating)))
+
+
