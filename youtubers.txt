@@ -1,7 +1,18 @@
 Youtubers que tem videos no db
 
-jakepaulproductions
-pewdiepie
-rezendeevil
-jacksepticeye
-felipeneto
+Famosos
+	jakepaulproductions
+	pewdiepie
+	rezendeevil
+	jacksepticeye
+	felipeneto
+Com diferença muito grande nas views
+	j0be1133
+	brotheragi
+	gamermatheus01
+	yesfunnyyes
+Aleatorios
+	thevoicer1313
+	redvacktor
+	harujiggly
+	beauty4taty
