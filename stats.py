@@ -3,25 +3,17 @@
 # @package crawler.py
 #      @author Caio Oliveira (caiomcoliveira@gmail.com)
 
-
+from colorama import Fore, Back, Style, init
+init()
 from scipy import stats
 import sqlite3
 import sys
 
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
 class VideosData:
-    def __init__(self):
+    def __init__(self, user, avg):
+        self.user = user
+        self.avg = int(avg)
         self.views = []  # lista vazia
         self.isQuestion = []  # lista vazia
         self.isArrowCircle = []
@@ -31,12 +23,32 @@ class VideosData:
         self.dates = []
         self.rating = []
         self.ratings = []
+        self.comments = []
         self.isClickBait = []
 
-    def fillClickBait(self):
-        for i in range(len(self.isQuestion)):
-            self.isClickBait.append(
-                self.isQuestion[i] or self.isArrowCircle[i] or self.isSexual[i] or self.isHyperbole[i] or self.containsBaitWords[i])
+    def correlations(self):
+        print(Fore.CYAN + "User: " +
+              self.user + Fore.RESET)
+        for item in self.views:
+            item = item - self.avg
+
+        print("AVG VIEWS : " + Fore.MAGENTA + repr(self.avg) + Fore.RESET)
+        print("Correlation Question = " +
+              printWithColor(stats.pointbiserialr(self.views, self.isQuestion).correlation))
+        print("Correlation ArrowCircle = " +
+              printWithColor(stats.pointbiserialr(self.views, self.isArrowCircle).correlation))
+        print("Correlation Sexual = " +
+              printWithColor(stats.pointbiserialr(self.views, self.isSexual).correlation))
+        print("Correlation Hyperbole = " +
+              printWithColor(stats.pointbiserialr(self.views, self.isHyperbole).correlation))
+        print("Correlation containsBaitWords = " +
+              printWithColor(stats.pointbiserialr(self.views, self.containsBaitWords).correlation))
+        print("Coef Peason with ratings" +
+              printWithColor(stats.pearsonr(self.views, self.ratings)[0]))
+        print("Coef Peason with rating (%)" +
+              printWithColor(stats.pearsonr(self.views, self.rating)[0]))
+        print("Coef Peason with comments " +
+              printWithColor(stats.pearsonr(self.views, self.comments)[0]))
 
 
 def getDataByUser(user):
@@ -46,11 +58,11 @@ def getDataByUser(user):
         "SELECT avg(views) FROM videos where userId = '{}' order by created_at asc LIMIT 40;".format(user)).fetchone()
 
     results = c.execute(
-        "SELECT views, isQuestion, isArrowCircle, isSexual, isHyperbole, containsBaitWords, rating, ratings, created_at FROM videos where userId = '{}' order by created_at asc LIMIT 40;".format(user)).fetchall()
-    data = VideosData()
+        "SELECT views, isQuestion, isArrowCircle, isSexual, isHyperbole, containsBaitWords, rating, ratings, comments, created_at FROM videos where userId = '{}' order by created_at asc LIMIT 40;".format(user)).fetchall()
+    data = VideosData(user, media[0])
 
     for result in results:
-        data.views.append(media[0] - result[0])
+        data.views.append(result[0])
         data.isQuestion.append(result[1])
         data.isArrowCircle.append(result[2])
         data.isSexual.append(result[3])
@@ -58,46 +70,53 @@ def getDataByUser(user):
         data.containsBaitWords.append(result[5])
         data.rating.append(result[6])
         data.ratings.append(result[7])
-        data.dates.append(result[8])
-    data.fillClickBait()
+        data.comments.append(result[8])
+        data.dates.append(result[9])
+
     conn.close()
     return data
 
+
 def printWithColor(data):
     if(data != data):
-        return bcolors.FAIL + repr(data) + bcolors.ENDC
-    if(data>=0.3 or data <= -0.3):
-        return bcolors.OKGREEN + repr(data) + bcolors.ENDC
+        return Fore.RED + repr(data) + Fore.RESET
+    if(data >= 0.3 or data <= -0.3):
+        return Fore.GREEN + repr(data) + Fore.RESET
     return repr(data)
-    
+
 
 users = ['jakepaulproductions', 'pewdiepie',
-         'rezendeevil', 'jacksepticeye', 'felipeneto',  'brotheragi', 
-            'gamermatheus01', 'yesfunnyyes', 
-            'thevoicer1313',
-            'redvacktor',
-            'harujiggly',
-            'beauty4taty' ]
+         'rezendeevil', 'jacksepticeye', 'felipeneto',  'brotheragi',
+         'gamermatheus01', 'yesfunnyyes',
+         'thevoicer1313',
+         'redvacktor',
+         'harujiggly',
+         'beauty4taty']
 
-for user in users:
+famous = ['jakepaulproductions', 'pewdiepie',
+          'rezendeevil', 'jacksepticeye', 'felipeneto']
+viewsJump = ['j0be1133', 'brotheragi', 'gamermatheus01',
+             'yesfunnyyes', 'gustavofelipea']
+randoms = ['thevoicer1313', 'redvacktor', 'harujiggly', 'beauty4taty']
+smalls = ['itecnodia', 'benitogamersbrasil',
+          'mr8933', 'rubinhoelhais', 'casalpartiu']
+
+
+for user in famous:
     data = getDataByUser(user)
-    print(bcolors.OKBLUE + "##############" +
-          user + "#############" + bcolors.ENDC)
-    print("Correlation Question = " +
-          printWithColor(stats.pointbiserialr(data.views, data.isQuestion).correlation))
-    print("Correlation ArrowCircle = " +
-          printWithColor(stats.pointbiserialr(data.views, data.isArrowCircle).correlation))
-    print("Correlation Sexual = " +
-          printWithColor(stats.pointbiserialr(data.views, data.isSexual).correlation))
-    print("Correlation Hyperbole = " +
-          printWithColor(stats.pointbiserialr(data.views, data.isHyperbole).correlation))
-    print("Correlation containsBaitWords = " +
-          printWithColor(stats.pointbiserialr(data.views, data.containsBaitWords).correlation))
-    print("Correlation bait = " +
-          printWithColor(stats.pointbiserialr(data.views, data.isClickBait).correlation))
-    print("Coef Peason with ratings" +
-          printWithColor(stats.pearsonr(data.views, data.ratings)))
-    print("Coef Peason with rating (%)" +
-          printWithColor(stats.pearsonr(data.views, data.rating)))
+    data.correlations()
 
+print("Jump Views")
+for user in viewsJump:
+    data = getDataByUser(user)
+    data.correlations()
 
+print("random")
+for user in randoms:
+    data = getDataByUser(user)
+    data.correlations()
+
+print("smalls")
+for user in smalls:
+    data = getDataByUser(user)
+    data.correlations()
