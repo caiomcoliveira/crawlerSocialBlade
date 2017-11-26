@@ -102,22 +102,22 @@ randoms = ['thevoicer1313', 'redvacktor', 'harujiggly', 'beauty4taty']
 smalls = ['itecnodia', 'benitogamersbrasil',
           'mr8933', 'rubinhoelhais', 'casalpartiu']
 
-
+print(Back.RED + "Famous" + Back.RESET)
 for user in famous:
     data = getDataByUser(user)
     data.correlations()
 
-print("Jump Views")
+print(Back.RED + "Concentraded Views" + Back.RESET)
 for user in viewsJump:
     data = getDataByUser(user)
     data.correlations()
 
-print("random")
+print(Back.RED + "Random" + Back.RESET)
 for user in randoms:
     data = getDataByUser(user)
     data.correlations()
 
-print("smalls")
+print(Back.RED + "Small Channels" + Back.RESET)
 for user in smalls:
     data = getDataByUser(user)
     data.correlations()
