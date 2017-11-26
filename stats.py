@@ -35,12 +35,12 @@ class VideosData:
             deltaView.append(item - self.avg)
 
         print("AVG VIEWS : " + Fore.MAGENTA + repr(self.avg) + Fore.RESET)
-        print("Standart Deviation = " +
-              repr(numpy.std(self.views, axis=None, dtype=None, out=None, ddof=1)))
-        print("Coefficient of variation = " +
-              repr(numpy.std(self.views, axis=None, dtype=None, out=None, ddof=1) / self.avg))
-        print("Confidence Interval = " +
-              repr(stats.norm.interval(0.90, self.avg, scale=stats.sem(self.views))))
+        print("Standart Deviation = " + Fore.MAGENTA +
+              repr(numpy.std(self.views, axis=None, dtype=None, out=None, ddof=0)) + Fore.RESET)
+        print("Coefficient of variation = " + Fore.MAGENTA +
+              repr(numpy.std(self.views, axis=None, dtype=None, out=None, ddof=1) / self.avg) + Fore.RESET)
+        print("Confidence Interval = " + Fore.MAGENTA +
+              repr(stats.norm.interval(0.95, self.avg, scale=stats.sem(self.views))) + Fore.RESET)
         print("Correlation Question = " +
               printWithColor(stats.pointbiserialr(deltaView, self.isQuestion).correlation))
         print("Correlation ArrowCircle = " +
@@ -88,8 +88,11 @@ def getDataByUser(user):
 def printWithColor(data):
     if(data != data):
         return Fore.RED + repr(data) + Fore.RESET
-    if(data >= 0.3 or data <= -0.3):
+    if(abs(data) >= 0.2):
+        if(abs(data) >= 0.3):
+            return Fore.LIGHTGREEN_EX + repr(data) + Fore.RESET
         return Fore.GREEN + repr(data) + Fore.RESET
+
     return repr(data)
 
 
@@ -108,23 +111,27 @@ viewsJump = ['j0be1133', 'brotheragi', 'gamermatheus01',
 randoms = ['thevoicer1313', 'redvacktor', 'harujiggly', 'beauty4taty']
 smalls = ['itecnodia', 'benitogamersbrasil',
           'mr8933', 'rubinhoelhais', 'casalpartiu']
-
-print(Back.RED + "Famous" + Back.RESET)
+print(Back.RED)
+print("################Famous######################")
+print(Back.RESET)
 for user in famous:
     data = getDataByUser(user)
     data.correlations()
-
-print(Back.RED + "Concentraded Views" + Back.RESET)
+print(Back.RED)
+print("################Concentraded Views######################")
+print(Back.RESET)
 for user in viewsJump:
     data = getDataByUser(user)
     data.correlations()
-
-print(Back.RED + "Random" + Back.RESET)
+print(Back.RED)
+print("################Random######################")
+print(Back.RESET)
 for user in randoms:
     data = getDataByUser(user)
     data.correlations()
-
-print(Back.RED + "Small Channels" + Back.RESET)
+print(Back.RED)
+print("################Small Channels######################")
+print(Back.RESET)
 for user in smalls:
     data = getDataByUser(user)
     data.correlations()
