@@ -6,6 +6,7 @@
 from colorama import Fore, Back, Style, init
 init()
 from scipy import stats
+import numpy
 import sqlite3
 import sys
 
@@ -34,6 +35,12 @@ class VideosData:
             deltaView.append(item - self.avg)
 
         print("AVG VIEWS : " + Fore.MAGENTA + repr(self.avg) + Fore.RESET)
+        print("Standart Deviation = " +
+              repr(numpy.std(self.views, axis=None, dtype=None, out=None, ddof=1)))
+        print("Coefficient of variation = " +
+              repr(numpy.std(self.views, axis=None, dtype=None, out=None, ddof=1) / self.avg))
+        print("Confidence Interval = " +
+              repr(stats.norm.interval(0.90, self.avg, scale=stats.sem(self.views))))
         print("Correlation Question = " +
               printWithColor(stats.pointbiserialr(deltaView, self.isQuestion).correlation))
         print("Correlation ArrowCircle = " +
@@ -44,11 +51,11 @@ class VideosData:
               printWithColor(stats.pointbiserialr(deltaView, self.isHyperbole).correlation))
         print("Correlation containsBaitWords = " +
               printWithColor(stats.pointbiserialr(deltaView, self.containsBaitWords).correlation))
-        print("Coef Peason with ratings" +
+        print("Coef Peason with ratings = " +
               printWithColor(stats.pearsonr(deltaView, self.ratings)[0]))
-        print("Coef Peason with rating (%)" +
+        print("Coef Peason with rating (%) = " +
               printWithColor(stats.pearsonr(deltaView, self.rating)[0]))
-        print("Coef Peason with comments " +
+        print("Coef Peason with comments = " +
               printWithColor(stats.pearsonr(deltaView, self.comments)[0]))
 
 
