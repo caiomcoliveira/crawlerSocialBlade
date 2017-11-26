@@ -27,28 +27,29 @@ class VideosData:
         self.isClickBait = []
 
     def correlations(self):
+        deltaView = []
         print(Fore.CYAN + "User: " +
               self.user + Fore.RESET)
         for item in self.views:
-            item = item - self.avg
+            deltaView.append(item - self.avg)
 
         print("AVG VIEWS : " + Fore.MAGENTA + repr(self.avg) + Fore.RESET)
         print("Correlation Question = " +
-              printWithColor(stats.pointbiserialr(self.views, self.isQuestion).correlation))
+              printWithColor(stats.pointbiserialr(deltaView, self.isQuestion).correlation))
         print("Correlation ArrowCircle = " +
-              printWithColor(stats.pointbiserialr(self.views, self.isArrowCircle).correlation))
+              printWithColor(stats.pointbiserialr(deltaView, self.isArrowCircle).correlation))
         print("Correlation Sexual = " +
-              printWithColor(stats.pointbiserialr(self.views, self.isSexual).correlation))
+              printWithColor(stats.pointbiserialr(deltaView, self.isSexual).correlation))
         print("Correlation Hyperbole = " +
-              printWithColor(stats.pointbiserialr(self.views, self.isHyperbole).correlation))
+              printWithColor(stats.pointbiserialr(deltaView, self.isHyperbole).correlation))
         print("Correlation containsBaitWords = " +
-              printWithColor(stats.pointbiserialr(self.views, self.containsBaitWords).correlation))
+              printWithColor(stats.pointbiserialr(deltaView, self.containsBaitWords).correlation))
         print("Coef Peason with ratings" +
-              printWithColor(stats.pearsonr(self.views, self.ratings)[0]))
+              printWithColor(stats.pearsonr(deltaView, self.ratings)[0]))
         print("Coef Peason with rating (%)" +
-              printWithColor(stats.pearsonr(self.views, self.rating)[0]))
+              printWithColor(stats.pearsonr(deltaView, self.rating)[0]))
         print("Coef Peason with comments " +
-              printWithColor(stats.pearsonr(self.views, self.comments)[0]))
+              printWithColor(stats.pearsonr(deltaView, self.comments)[0]))
 
 
 def getDataByUser(user):
